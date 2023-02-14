@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  migrateup:
+    cmds:
+      - goose -dir db/migrations sqlite3 ./dev.db up
+
+  migratedown:
+    cmds:
+      - goose -dir db/migrations sqlite3 ./dev.db down
+
+  lint:
+    cmds:
+      - golangci-lint run
