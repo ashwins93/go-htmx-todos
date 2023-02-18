@@ -12,3 +12,17 @@ tasks:
   lint:
     cmds:
       - golangci-lint run
+
+  build:
+    cmds:
+      - go build -o ./bin/www ./cmd/...
+  
+  start:
+    cmds:
+      - go run ./cmd/...
+    sources:
+      - ./*.go
+      - ./**/*.go
+      - ./go.mod
+      - ./go.sum
+

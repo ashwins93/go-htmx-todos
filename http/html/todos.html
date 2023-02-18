@@ -1,0 +1,22 @@
+<div id="todos">
+  <form hx-post="/todos" hx-target="#todos">
+    <input type="text" placeholder="Add task" name="task">
+    <button>Add Todo</button>
+  </form>
+
+  {{ range .todos }}
+
+  <div class="todo-row">
+
+    {{ if .CompletedAt }}
+    <div hx-target="#todos" hx-put="/todos/{{ .ID }}" class="completed">{{ .Task }}</div>
+    {{ else }}
+    <div hx-target="#todos" hx-put="/todos/{{ .ID }}">{{ .Task }}</div>
+    {{ end}}
+
+    <button hx-delete="/todos/{{ .ID }}" hx-target="#todos">Delete</button>
+
+  </div>
+
+  {{ end }}
+</div>

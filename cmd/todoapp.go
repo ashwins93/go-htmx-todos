@@ -1,14 +1,15 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 
-	// "github.com/ashwins93/wutplans"
 	"github.com/ashwins93/wutplans/db"
+	httpService "github.com/ashwins93/wutplans/http"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -22,23 +23,17 @@ func main() {
 
 	db := db.New(conn)
 
-	/*todo, err := db.CreateTodo(context.Background(), &wutplans.Todo{
-		Task: "Explore htmx",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	e := echo.New()
 
-	fmt.Println("Todo created", todo)
-	*/
+	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
+	e.Static("/", "public")
 
-	todos, err := db.FindAllTodos(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
+	service := httpService.New(db)
+	service.SetupRoutes(e)
 
-	for i, todo := range todos {
-		json, _ := json.MarshalIndent(todo, "", "  ")
-		fmt.Printf("Todo %d: %v\n", i+1, string(json))
-	}
+	templates := template.Must(template.ParseGlob("http/html/*.html"))
+	e.Renderer = service.GetTemplateRenderer(templates)
+
+	log.Fatal(e.Start(":3000"))
 }
